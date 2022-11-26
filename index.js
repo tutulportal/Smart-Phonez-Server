@@ -1,8 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
+const { query } = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -38,6 +39,8 @@ function verifyJWT(req, res, next) {
 async function run() {
     try{
         const usersCollection = client.db('smartPhonez').collection('usersCollection');
+        const categoriesCollection = client.db('smartPhonez').collection('categoriesCollection');
+        const productCollection = client.db('smartPhonez').collection('productCollection');
 
 
         // jwt check
@@ -68,6 +71,45 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+
+
+        // load categories
+        app.get('/categories', async (req, res) => {
+            const query = {};
+            const categories = await categoriesCollection.find(query).toArray();
+            res.send(categories);
+        })
+
+        // load category by id
+        app.get('/categories/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id)};
+            const category = await categoriesCollection.find(query).toArray();
+            res.send(category);
+        })
+
+        // load all product
+        app.get('/products', async (req, res) => {
+            const query = {};
+            const products = await productCollection.find(query).toArray();
+            res.send(products);
+        })
+
+        // load product by category id
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { categoryId: id};
+            const products = await productCollection.find(query).toArray();
+            res.send(products);
+        })
+
+        // load products by advertise
+        app.get('/ad-products/:ad', async (req, res) => {
+            const value = req.params.ad;
+            const query = { advertise: value };
+            const addproducts = await productCollection.find(query).toArray();
+            res.send(addproducts);
+        })
 
 
     }
