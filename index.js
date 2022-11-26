@@ -41,6 +41,7 @@ async function run() {
         const usersCollection = client.db('smartPhonez').collection('usersCollection');
         const categoriesCollection = client.db('smartPhonez').collection('categoriesCollection');
         const productCollection = client.db('smartPhonez').collection('productCollection');
+        const bookingCollection = client.db('smartPhonez').collection('bookingCollection');
 
 
         // jwt check
@@ -62,6 +63,14 @@ async function run() {
             const users = await usersCollection.find(query).toArray();
             res.send(users);
         });
+
+        // find a specific user
+        app.get('/users/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await usersCollection.find(query).toArray();
+            res.send(user);
+        })
 
 
         // insert new user on register
@@ -110,6 +119,20 @@ async function run() {
             const addproducts = await productCollection.find(query).toArray();
             res.send(addproducts);
         })
+
+        // add new booking
+        app.post('/booking', async (req, res) => {
+            const booking = req.body;
+            console.log(booking);
+            const query = {userEmail: booking.userEmail};
+            const existEmail = await bookingCollection.find(query).toArray();
+            const alreadyExist = existEmail.find(exist => exist.productId === booking.productId);
+            if(alreadyExist){
+                return res.send({message: 'Already Booked'});
+            }
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
+        });
 
 
     }
