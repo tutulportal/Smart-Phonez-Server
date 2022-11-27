@@ -150,6 +150,14 @@ async function run() {
             res.send(result);
         })
 
+        // insert new product
+        app.post('/add-product', async (req, res) => {
+            const product = req.body;
+            console.log(product);
+            const result = await productCollection.insertOne(product);
+            res.send(result);
+        });
+
 
 
     }
