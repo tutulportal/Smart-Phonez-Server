@@ -120,6 +120,16 @@ async function run() {
             res.send(addproducts);
         })
 
+        // load products by email
+        app.get('/find-products/:email', async (req, res) => {
+            const email = req.params.email;
+            console.log(email);
+            const query = { email: email };
+            const results = await productCollection.find(query).toArray();
+            console.log(results);
+            res.send(results);
+        })
+
         // add new booking
         app.post('/booking', async (req, res) => {
             const booking = req.body;
