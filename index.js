@@ -134,6 +134,23 @@ async function run() {
             res.send(result);
         });
 
+        // load all booking by email
+        app.get('/bookings/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { userEmail: email };
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // remove single booking by id
+        app.delete('/bookings/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await bookingCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
 
     }
     finally{
