@@ -74,6 +74,11 @@ async function run() {
         })
 
         // find all buyer
+        app.get('/users/buyers', async (req, res) => {
+            const query = {userRole: 'buyer'};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        })
 
         // find a specific user
         app.get('/users/:email', async (req, res) => {
