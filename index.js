@@ -88,6 +88,14 @@ async function run() {
             res.send(user);
         })
 
+        // delete a user
+        app.delete('/users/delete/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await usersCollection.deleteOne(query);
+            res.send(result);
+        })
+
 
         // insert new user on register
         app.post('/users', async (req, res) => {
@@ -101,6 +109,26 @@ async function run() {
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
+
+        // update user's data
+        app.patch('/users/update/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const updateUser = req.body;
+            console.log(updateUser);
+            const query = {_id: ObjectId(id)};
+            const result = await usersCollection.updateOne(query,{$set: updateUser});
+            console.log(result);
+            if(result.modifiedCount > 0){
+                res.send({
+                    message: 'updated',
+                    data: result,
+                })
+            }else{
+                res.send({
+                    message: 'error',
+                })
+            }
+        })
 
 
         // load categories
