@@ -50,11 +50,13 @@ async function run() {
             const query = { email: email };
             const user = await usersCollection.findOne(query);
             if (user) {
-                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '1h' })
+                const token = jwt.sign({ email }, process.env.ACCESS_TOKEN, { expiresIn: '7d' })
                 return res.send({ accessToken: token, haveUser: 1 });
             }
             res.status(403).send({ accessToken: '', haveUser: 0 })
         });
+
+        
 
 
         // find all users
@@ -77,6 +79,11 @@ async function run() {
         app.post('/users', async (req, res) => {
             const user = req.body;
             console.log(user);
+            const query = { email: user.email };
+            const finds = await usersCollection.findOne(query);
+            if(finds){
+                return res.send(finds);
+            }
             const result = await usersCollection.insertOne(user);
             res.send(result);
         });
@@ -128,6 +135,26 @@ async function run() {
             const results = await productCollection.find(query).toArray();
             console.log(results);
             res.send(results);
+        })
+
+        // update product advertised state
+        app.patch('/update-product/:id', async (req, res) => {
+            const id = req.params;
+            const updateProduct = req.body;
+            console.log(updateProduct);
+            const query = {_id: ObjectId(id)};
+            const result = await productCollection.updateOne(query,{$set: updateProduct});
+            console.log(result);
+            if(result.modifiedCount > 0){
+                res.send({
+                    message: 'updated',
+                    data: result,
+                })
+            }else{
+                res.send({
+                    message: 'error',
+                })
+            }
         })
 
         // add new booking
