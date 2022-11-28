@@ -171,6 +171,14 @@ async function run() {
             }
         })
 
+        // delete product
+        app.delete('/products/delete/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await productCollection.deleteOne(query);
+            res.send(result);
+        })
+
         // add new booking
         app.post('/booking', async (req, res) => {
             const booking = req.body;
