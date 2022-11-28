@@ -66,6 +66,15 @@ async function run() {
             res.send(users);
         });
 
+        // find all seller
+        app.get('/users/sellers', async (req, res) => {
+            const query = {userRole: 'seller'};
+            const users = await usersCollection.find(query).toArray();
+            res.send(users);
+        })
+
+        // find all buyer
+
         // find a specific user
         app.get('/users/:email', async (req, res) => {
             const email = req.params.email;
@@ -137,9 +146,9 @@ async function run() {
             res.send(results);
         })
 
-        // update product advertised state
-        app.patch('/update-product/:id', async (req, res) => {
-            const id = req.params;
+        // update product advertised and status state
+        app.patch('/update-product/:id', verifyJWT, async (req, res) => {
+            const id = req.params.id;
             const updateProduct = req.body;
             console.log(updateProduct);
             const query = {_id: ObjectId(id)};
